@@ -1,6 +1,6 @@
 #include "changepoints_tree.h"
 
-void build_tree(cpt_tree_node_t **node, cpt_tree_node_t **parent_node, unsigned int start, unsigned int end, double th, contrasts_t *contrasts, eval_contrast_fun_t eval_contrast_fun){
+void build_tree(cpt_tree_node_t **node, cpt_tree_node_t **parent_node, int start, int end, double th, contrasts_t *contrasts, eval_contrast_fun_t eval_contrast_fun){
   
   // first case - the node is empty
   if(end-start>1) if((*node) == NULL){
@@ -8,8 +8,8 @@ void build_tree(cpt_tree_node_t **node, cpt_tree_node_t **parent_node, unsigned 
     // find the indices of the intervals such that they are greater than threshold and they are inside (s, e)
     // if there is no parent node - create index, if the parent node exists, use it's index
     
-    unsigned int *index;
-    unsigned int n_intervals;
+    int *index;
+    int n_intervals;
     
     if((*parent_node) == NULL){
       
@@ -24,8 +24,8 @@ void build_tree(cpt_tree_node_t **node, cpt_tree_node_t **parent_node, unsigned 
     }
     
      
-    unsigned int *new_index = Calloc(n_intervals, unsigned int);
-    unsigned int i,j,new_n_intervals=0;
+    int *new_index = Calloc(n_intervals, int);
+    int i,j,new_n_intervals=0;
     
     for(i=0; i<n_intervals; i++){
       
@@ -40,7 +40,7 @@ void build_tree(cpt_tree_node_t **node, cpt_tree_node_t **parent_node, unsigned 
       if(new_n_intervals == 0) Free(new_index);
       else{
         
-        new_index = Realloc(new_index, new_n_intervals, unsigned int);
+        new_index = Realloc(new_index, new_n_intervals, int);
         (*node) = Calloc(1, cpt_tree_node_t);
         
   
@@ -86,7 +86,7 @@ void build_tree(cpt_tree_node_t **node, cpt_tree_node_t **parent_node, unsigned 
       } else if(new_n_intervals > 0){
         
         
-        new_index = Realloc(new_index, new_n_intervals, unsigned int);
+        new_index = Realloc(new_index, new_n_intervals, int);
         
         (*node) = Calloc(1, cpt_tree_node_t);
         (**node).index = new_index;
@@ -134,7 +134,7 @@ void build_tree(cpt_tree_node_t **node, cpt_tree_node_t **parent_node, unsigned 
   
 }
 
-void get_changepoints(cpt_tree_node_t **node, cpts_t *cpts, unsigned int start, unsigned int end, unsigned int min_dist){
+void get_changepoints(cpt_tree_node_t **node, cpts_t *cpts, int start, int end, int min_dist){
   
   if((*node)!= NULL) {
     
@@ -153,12 +153,12 @@ void get_changepoints(cpt_tree_node_t **node, cpts_t *cpts, unsigned int start, 
 }
 
 int compare_unsigned_int(const void *a, const void *b){
-  const unsigned int *x = a, *y = b;
+  const int *x = a, *y = b;
   if(*x > *y) return 1;
   else return(*x < *y) ? -1: 0;
 }
 
-int compare_cpts_t(const cpts_t *a, const cpts_t *b, unsigned int n_obs){
+int compare_cpts_t(const cpts_t *a, const cpts_t *b, int n_obs){
   
   if((*a).n_cpt != (*b).n_cpt) return 1;
   else {
@@ -166,7 +166,7 @@ int compare_cpts_t(const cpts_t *a, const cpts_t *b, unsigned int n_obs){
     char *tmp = Calloc(n_obs, char);
     memset(tmp, 0,  n_obs * sizeof(char));
     
-    unsigned int i = 0;
+    int i = 0;
     int are_different = 0;
     
     for(i=0; i<(*a).n_cpt; i++) tmp[(*a).cpt[i]] = 1;
@@ -189,19 +189,19 @@ int compare_cpts_t(const cpts_t *a, const cpts_t *b, unsigned int n_obs){
 }
 
 
-solution_path_t *solution_path(contrasts_t *contrasts, eval_contrast_fun_t eval_contrast_fun, unsigned int min_dist){
+solution_path_t *solution_path(contrasts_t *contrasts, eval_contrast_fun_t eval_contrast_fun, int min_dist){
   
   //create the solution path
   solution_path_t *solution_path = Calloc(1, solution_path_t);
   (*solution_path).cpts = Calloc(0, cpts_t);
-  unsigned int len = 0, allocated_len = 0, cpts_not_eqal = 1;
+  int len = 0, allocated_len = 0, cpts_not_eqal = 1;
   
   
   cpts_t tmp_cpts;
   double th = 0.0;
 
   
-  tmp_cpts.cpt = Calloc((*contrasts).n_obs, unsigned int);
+  tmp_cpts.cpt = Calloc((*contrasts).n_obs, int);
   
   //build the initial tree
   cpt_tree_node_t * root = NULL;
@@ -233,7 +233,7 @@ solution_path_t *solution_path(contrasts_t *contrasts, eval_contrast_fun_t eval_
       
       //allocate memory for cpt locations
     
-      (*solution_path).cpts[len].cpt = Calloc(tmp_cpts.n_cpt, unsigned int);
+      (*solution_path).cpts[len].cpt = Calloc(tmp_cpts.n_cpt, int);
       memcpy((*solution_path).cpts[len].cpt, tmp_cpts.cpt, tmp_cpts.n_cpt * sizeof(unsigned));
       (*solution_path).cpts[len].n_cpt = tmp_cpts.n_cpt;
       (*solution_path).cpts[len].min_max = tmp_cpts.min_max;
@@ -260,7 +260,7 @@ void destroy_solution_path(solution_path_t **solution_path){
   
   if( (*solution_path) != NULL){
     
-    for(unsigned int i=0; i<(**solution_path).n_th; i++) Free((**solution_path).cpts[i].cpt);
+    for(int i=0; i<(**solution_path).n_th; i++) Free((**solution_path).cpts[i].cpt);
     Free((**solution_path).cpts);
     Free((**solution_path).th);
     Free(*solution_path);
@@ -285,4 +285,3 @@ void destroy_tree(cpt_tree_node_t **node){
   *node = NULL;
 
 }
-

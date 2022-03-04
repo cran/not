@@ -27,17 +27,19 @@ SEXP contrasts_t_to_dataframe(contrasts_t *contrasts){
   
   setAttrib(lst,R_NamesSymbol,lstnames); 
   
-  memcpy(INTEGER(start), (*contrasts).start, (*contrasts).n_intervals * sizeof(unsigned int));
-  memcpy(INTEGER(end), (*contrasts).end, (*contrasts).n_intervals * sizeof(unsigned int));
-  memcpy(INTEGER(len), (*contrasts).length, (*contrasts).n_intervals * sizeof(unsigned int));
-  memcpy(INTEGER(arg_max), (*contrasts).arg_max, (*contrasts).n_intervals * sizeof(unsigned int));
+  memcpy(INTEGER(start), (*contrasts).start, (*contrasts).n_intervals * sizeof(int));
+  memcpy(INTEGER(end), (*contrasts).end, (*contrasts).n_intervals * sizeof(int));
+  memcpy(INTEGER(len), (*contrasts).length, (*contrasts).n_intervals * sizeof(int));
+  memcpy(INTEGER(arg_max), (*contrasts).arg_max, (*contrasts).n_intervals * sizeof(int));
   memcpy(REAL(max), (*contrasts).max, (*contrasts).n_intervals * sizeof(double));
+  
+  UNPROTECT(7);
   
   SEXP df;
   df = PROTECT(lang2(install("data.frame"), lst)); 
   SEXP res = PROTECT(eval(df, R_GlobalEnv)); 
   
-  UNPROTECT(9);
+  UNPROTECT(2);
   
   return res;
 }
@@ -47,9 +49,9 @@ SEXP solution_path_t_to_list(solution_path_t *solution_path){
   
   
   SEXP res, resnames, tmp, th, n_cpt, locations;
-  unsigned int i;
-  unsigned int n_protected = 0;
-  unsigned int n_th = (*solution_path).n_th;
+  int i;
+  int n_protected = 0;
+  int n_th = (*solution_path).n_th;
   
   PROTECT(locations = allocVector(VECSXP, n_th));
   PROTECT(th = allocVector(REALSXP, n_th));
@@ -69,7 +71,7 @@ SEXP solution_path_t_to_list(solution_path_t *solution_path){
     
     PROTECT(tmp = allocVector(INTSXP, (*solution_path).cpts[i].n_cpt));
     
-    memcpy(INTEGER(tmp), (*solution_path).cpts[i].cpt, (*solution_path).cpts[i].n_cpt * sizeof(unsigned int));
+    memcpy(INTEGER(tmp), (*solution_path).cpts[i].cpt, (*solution_path).cpts[i].n_cpt * sizeof(int));
     
     SET_VECTOR_ELT(locations, n_th-i-1, tmp);
     
@@ -105,17 +107,17 @@ SEXP solution_path_t_to_list(solution_path_t *solution_path){
 SEXP not_r_wrapper(SEXP x, SEXP intervals, SEXP method, SEXP contrast_type, SEXP parallel, SEXP augmented){
   
   SEXP intervals_dim;
-  unsigned int v_n_protected = 0;
+  int v_n_protected = 0;
   
   PROTECT(intervals_dim = getAttrib(intervals, R_DimSymbol));
   v_n_protected++;
   
-  unsigned int v_n_obs = length(x);
-  unsigned int v_n_intervals = INTEGER(intervals_dim)[0];
+  int v_n_obs = length(x);
+  int v_n_intervals = INTEGER(intervals_dim)[0];
 
   contrasts_t *p_contrasts;
   double *p_x = REAL(x);
-  unsigned int *p_intervals = (unsigned int *) INTEGER(intervals);
+  int *p_intervals = INTEGER(intervals);
   
   int v_parallel = INTEGER(parallel)[0];
   int v_method = INTEGER(method)[0];
@@ -170,16 +172,16 @@ SEXP not_r_wrapper(SEXP x, SEXP intervals, SEXP method, SEXP contrast_type, SEXP
   // v_method > 1 -> max
   
   if(v_method == 0){
-    for(unsigned int i=0; i<(*p_contrasts).n_intervals; i++) p_tmp[i] =  (double) ((*p_contrasts).length[i]);
+    for(int i=0; i<(*p_contrasts).n_intervals; i++) p_tmp[i] =  (double) ((*p_contrasts).length[i]);
     // Sort the contrasts from the shortest intervals to the largest one
     rsort_with_index(p_tmp, (*p_contrasts).index, (*p_contrasts).n_intervals);
   }else{
     // Sort the contrasts from the largest val to the smallest one
-    for(unsigned int i=0; i<(*p_contrasts).n_intervals; i++) p_tmp[i] =  (double) ((*p_contrasts).max[i]);
+    for(int i=0; i<(*p_contrasts).n_intervals; i++) p_tmp[i] =  (double) ((*p_contrasts).max[i]);
     revsort(p_tmp, (*p_contrasts).index, (*p_contrasts).n_intervals);
   }
   
-  //for(unsigned int i=0; i<(*p_contrasts).n_intervals; i++) Rprintf("%d ", (*p_contrasts).index[i]+1);
+  //for(int i=0; i<(*p_contrasts).n_intervals; i++) Rprintf("%d ", (*p_contrasts).index[i]+1);
   //Rprintf("\n");
   
   Free(p_tmp);
@@ -224,5 +226,3 @@ SEXP not_r_wrapper(SEXP x, SEXP intervals, SEXP method, SEXP contrast_type, SEXP
   
   
 }
-
-

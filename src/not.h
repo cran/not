@@ -11,32 +11,32 @@
 #define IDX(i,j,ld) ((((j)-1) * (ld))+((i)-1))
 
 typedef struct ip_max{
-  unsigned int arg_max;
+  int arg_max;
   double max;
   double abs_max;
 } ip_max_t;
 
 typedef struct ips {
-  unsigned int *index;
-  unsigned int *s;
-  unsigned int *e;
-  unsigned int *cpt;
+  int *index;
+  int *s;
+  int *e;
+  int *cpt;
   double *max;
   double *abs_max;
-  unsigned int M;
-  unsigned int n;
+  int M;
+  int n;
 } ips_t;
 
 
 typedef struct notres{
-  unsigned int *s;
-  unsigned int *e;
-  unsigned int *cpt;
+  int *s;
+  int *e;
+  int *cpt;
   double *max;
   double *minth;
-  unsigned int *scale;
-  unsigned int M;
-  unsigned int n;
+  int *scale;
+  int M;
+  int n;
 } not_res_t;
 
 SEXP not_r_wrapper(SEXP x, SEXP intervals, SEXP method, SEXP contrast_type, SEXP parallel, SEXP augmented);

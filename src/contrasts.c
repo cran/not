@@ -1,14 +1,14 @@
 #include "contrasts.h"
 
 //functions for change-point detection in piecewise constant signal + noise
-void alloc_contrasts(contrasts_t **contrasts, unsigned int n_intervals, double *x, unsigned int n_obs){
+void alloc_contrasts(contrasts_t **contrasts, int n_intervals, double *x, int n_obs){
   
   (*contrasts) = Calloc(1, contrasts_t);
-  (**contrasts).index = Calloc(n_intervals, unsigned int);
-  (**contrasts).start = Calloc(n_intervals, unsigned int);
-  (**contrasts).end = Calloc(n_intervals, unsigned int);
-  (**contrasts).length = Calloc(n_intervals, unsigned int);
-  (**contrasts).arg_max = Calloc(n_intervals, unsigned int);
+  (**contrasts).index = Calloc(n_intervals, int);
+  (**contrasts).start = Calloc(n_intervals, int);
+  (**contrasts).end = Calloc(n_intervals, int);
+  (**contrasts).length = Calloc(n_intervals, int);
+  (**contrasts).arg_max = Calloc(n_intervals, int);
   (**contrasts).max = Calloc(n_intervals, double);
   (**contrasts).x = Calloc(n_obs, double);
   memcpy((**contrasts).x, x, n_obs * sizeof(double));
@@ -37,7 +37,7 @@ void destroy_contrasts(contrasts_t **contrasts){
 }
 
 
-max_contrast_t intercept_contrast(double *x, unsigned int n_obs){
+max_contrast_t intercept_contrast(double *x, int n_obs){
   
   max_contrast_t max_contrast;
   max_contrast.arg_max = 0;
@@ -45,7 +45,7 @@ max_contrast_t intercept_contrast(double *x, unsigned int n_obs){
   
   if(n_obs > 3){
 
-    unsigned int i;
+    int i;
     
     double sum_left=0, sum_right=0, const_coef;
     
@@ -93,7 +93,7 @@ max_contrast_t intercept_contrast(double *x, unsigned int n_obs){
   
 }
 
-max_contrast_t intercept_signs_contrast(double *x, unsigned int n_obs){
+max_contrast_t intercept_signs_contrast(double *x, int n_obs){
   
   max_contrast_t max_contrast;
   max_contrast.arg_max = 0;
@@ -101,7 +101,7 @@ max_contrast_t intercept_signs_contrast(double *x, unsigned int n_obs){
   
   if(n_obs > 3){
     
-    unsigned int i;
+    int i;
     
     //find the mean in this interval
     double mean = 0.0;
@@ -155,7 +155,7 @@ max_contrast_t intercept_signs_contrast(double *x, unsigned int n_obs){
   
 }
 
-max_contrast_t slope_contrast(double *x, unsigned int n_obs){
+max_contrast_t slope_contrast(double *x, int n_obs){
   
   max_contrast_t max_contrast;
   max_contrast.arg_max = 0;
@@ -164,7 +164,7 @@ max_contrast_t slope_contrast(double *x, unsigned int n_obs){
   if(n_obs > 3){
     
     
-    unsigned int i,j;
+    int i,j;
     
     double lin_coef;
     double n_dbl = (double) n_obs;
@@ -234,7 +234,7 @@ max_contrast_t slope_contrast(double *x, unsigned int n_obs){
 }
 
 
-max_contrast_t intercept_and_slope_contrast(double *x, unsigned int n_obs){
+max_contrast_t intercept_and_slope_contrast(double *x, int n_obs){
   
   max_contrast_t max_contrast;
   max_contrast.arg_max = 0;
@@ -242,7 +242,7 @@ max_contrast_t intercept_and_slope_contrast(double *x, unsigned int n_obs){
 
   if(n_obs > 5){
     
-    unsigned int i,j;
+    int i,j;
     
     double contrast, const_coef, lin_coef, lin_coef_left, lin_coef_right;
     double n_dbl = (double) n_obs;
@@ -325,7 +325,7 @@ max_contrast_t intercept_and_slope_contrast(double *x, unsigned int n_obs){
   
 }
 
-max_contrast_t intercept_slope_and_quadratic_contrast(double *x, unsigned int n_obs){
+max_contrast_t intercept_slope_and_quadratic_contrast(double *x, int n_obs){
   
   max_contrast_t max_contrast;
   max_contrast.max = 0;
@@ -334,7 +334,7 @@ max_contrast_t intercept_slope_and_quadratic_contrast(double *x, unsigned int n_
   if(n_obs > 7){
     
   
-    unsigned int i,j;
+    int i,j;
     
     double contrast, const_coef, lin_coef, lin_coef_left, lin_coef_right, quad_coef, quad_coef_left, quad_coef_right;
     double n_dbl = (double) n_obs;
@@ -438,7 +438,7 @@ max_contrast_t intercept_slope_and_quadratic_contrast(double *x, unsigned int n_
   
 }
 
-max_contrast_t intercept_and_volatility_contrast(double *x, unsigned int n_obs){
+max_contrast_t intercept_and_volatility_contrast(double *x, int n_obs){
   
   max_contrast_t max_contrast;
   max_contrast.arg_max = 0;
@@ -446,7 +446,7 @@ max_contrast_t intercept_and_volatility_contrast(double *x, unsigned int n_obs){
   
   if(n_obs >=6){
     
-    unsigned int i,j;
+    int i,j;
     
     double contrast, var, var_left, n_log_var, var_right, tmp;
     double n_dbl = (double) n_obs;
@@ -528,20 +528,20 @@ max_contrast_t intercept_and_volatility_contrast(double *x, unsigned int n_obs){
   
 }
 
-contrasts_t *eval_contrasts(double *x, unsigned int n_obs, unsigned int *intervals, unsigned int n_intervals,
-                            eval_contrast_fun_t eval_contrast_fun, unsigned int parallel){
+contrasts_t *eval_contrasts(double *x, int n_obs, int *intervals, int n_intervals,
+                            eval_contrast_fun_t eval_contrast_fun, int parallel){
   contrasts_t *contrasts;
   alloc_contrasts(&contrasts, n_intervals, x, n_obs);
-  unsigned int *start = intervals; 
-  unsigned int *end = &intervals[n_intervals];
+  int *start = intervals; 
+  int *end = &intervals[n_intervals];
   
   
   //computation using one core only
   if(parallel == 0){
     
-    unsigned int i;
+    int i;
     max_contrast_t max_contrast;
-    unsigned int interval_length;
+    int interval_length;
     
     
     for(i=0; i<n_intervals; i++){
@@ -564,9 +564,9 @@ contrasts_t *eval_contrasts(double *x, unsigned int n_obs, unsigned int *interva
     
     #pragma omp parallel
     {
-      unsigned int i;
+      int i;
       max_contrast_t max_contrast;
-      unsigned int interval_length;
+      int interval_length;
       
       #pragma omp for
       for(i=0; i<n_intervals; i++){
