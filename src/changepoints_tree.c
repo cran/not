@@ -3,135 +3,132 @@
 void build_tree(cpt_tree_node_t **node, cpt_tree_node_t **parent_node, int start, int end, double th, contrasts_t *contrasts, eval_contrast_fun_t eval_contrast_fun){
   
   // first case - the node is empty
-  if(end-start>1) if((*node) == NULL){
+  if(end-start>1){
+    if((*node) == NULL){
     
-    // find the indices of the intervals such that they are greater than threshold and they are inside (s, e)
-    // if there is no parent node - create index, if the parent node exists, use it's index
+      // find the indices of the intervals such that they are greater than threshold and they are inside (s, e)
+      // if there is no parent node - create index, if the parent node exists, use it's index
     
-    int *index;
-    int n_intervals;
+      int *index;
+      int n_intervals;
     
-    if((*parent_node) == NULL){
+      if((*parent_node) == NULL){
       
-      n_intervals = (*contrasts).n_intervals;
-      index =(*contrasts).index;
+        n_intervals = (*contrasts).n_intervals;
+        index =(*contrasts).index;
       
-    }else{
+      }else{
       
-      n_intervals = (**parent_node).n_intervals;
-      index = (**parent_node).index;
+        n_intervals = (**parent_node).n_intervals;
+        index = (**parent_node).index;
       
-    }
+      }
     
      
-    int *new_index = Calloc(n_intervals, int);
-    int i,j,new_n_intervals=0;
+      int *new_index = Calloc(n_intervals, int);
+      int i,j,new_n_intervals=0;
     
-    for(i=0; i<n_intervals; i++){
+      for(i=0; i<n_intervals; i++){
       
-      j = index[i];
-      if( ((*contrasts).max[j] > th) &&  ((*contrasts).start[j] >= start) && ((*contrasts).end[j] <= end)) new_index[new_n_intervals++] = j;
+        j = index[i];
+        if( ((*contrasts).max[j] > th) &&  ((*contrasts).start[j] >= start) && ((*contrasts).end[j] <= end)) new_index[new_n_intervals++] = j;
       
-    }
+      }
     
-    if(eval_contrast_fun == NULL){
+      if(eval_contrast_fun == NULL){
       
      //if nothing found - clean up, else-create new nodes
-      if(new_n_intervals == 0) Free(new_index);
-      else{
+        if(new_n_intervals == 0) Free(new_index);
+        else{
         
-        new_index = Realloc(new_index, new_n_intervals, int);
-        (*node) = Calloc(1, cpt_tree_node_t);
+          new_index = Realloc(new_index, new_n_intervals, int);
+          (*node) = Calloc(1, cpt_tree_node_t);
         
-  
-        struct cpt_tree_node *left_note, *right_node;
+          (**node).index = new_index;
+          (**node).n_intervals = new_n_intervals;
+          (**node).left_node = NULL;
+          (**node).right_node = NULL;
         
-        (**node).index = new_index;
-        (**node).n_intervals = new_n_intervals;
-        (**node).left_node = NULL;
-        (**node).right_node = NULL;
+          j = new_index[0];
         
-        j = new_index[0];
-        
-        (**node).cpt = (*contrasts).arg_max[j];
-        (**node).max = (*contrasts).max[j];
-        
-        //build trees for the children nodes
-        build_tree(&((**node).left_node), node, start, (**node).cpt, th, contrasts, eval_contrast_fun);
-        build_tree(&((**node).right_node), node, (**node).cpt+1, end, th, contrasts, eval_contrast_fun);
-        
-      }
-      
-    }else  {
-      // Combining bs and wbs into one
-      max_contrast_t contrast = eval_contrast_fun(&((*contrasts).x[start-1]), end-start+1);
-      
-      if(new_n_intervals == 0) Free(new_index);
-      
-      if((contrast.max > th) & (new_n_intervals==0)){
-
-        (*node) = Calloc(1, cpt_tree_node_t);
-        (**node).index = NULL;
-        (**node).n_intervals = 0;
-        (**node).left_node = NULL;
-        (**node).right_node = NULL;
-        
-        (**node).cpt = contrast.arg_max+start;
-        (**node).max = contrast.max;
-        
-        build_tree(&((**node).left_node), node, start, (**node).cpt, th, contrasts, eval_contrast_fun);
-        build_tree(&((**node).right_node), node, (**node).cpt+1, end, th, contrasts, eval_contrast_fun);
-
-        
-      } else if(new_n_intervals > 0){
-        
-        
-        new_index = Realloc(new_index, new_n_intervals, int);
-        
-        (*node) = Calloc(1, cpt_tree_node_t);
-        (**node).index = new_index;
-        (**node).n_intervals = new_n_intervals;
-        (**node).left_node = NULL;
-        (**node).right_node = NULL;
-        
-        j = new_index[0];
-
-        if((*contrasts).max[j] > contrast.max) {
-          (**node).cpt = (*contrasts).arg_max[j];  
+          (**node).cpt = (*contrasts).arg_max[j];
           (**node).max = (*contrasts).max[j];
-        }else{
-          (**node).cpt = contrast.arg_max+start;;
-          (**node).max = contrast.max;
+        
+          //build trees for the children nodes
+          build_tree(&((**node).left_node), node, start, (**node).cpt, th, contrasts, eval_contrast_fun);
+          build_tree(&((**node).right_node), node, (**node).cpt+1, end, th, contrasts, eval_contrast_fun);
+        
         }
-        
-        build_tree(&((**node).left_node), node, start, (**node).cpt, th, contrasts, eval_contrast_fun);
-        build_tree(&((**node).right_node), node, (**node).cpt+1, end, th, contrasts, eval_contrast_fun);
-        
-      }
-    } 
-    
-  }else{
-    //this when we just modify the tree applying a new threshold 
-    
-    //we check if we need to modify the tree
-    if((**node).max <= th) {
       
-      //the entire branch of the tree needs to be reconstructed, hence we destroy it
-      destroy_tree(node);
+      }else  {
+      // Combining bs and wbs into one
+        max_contrast_t contrast = eval_contrast_fun(&((*contrasts).x[start-1]), end-start+1);
+      
+        if(new_n_intervals == 0) Free(new_index);
+      
+        if((contrast.max > th) && (new_n_intervals==0)){
 
-      //we build this branch from scratch
-      build_tree(node, parent_node, start, end, th, contrasts, eval_contrast_fun);
-      
-    }else{
-      
-      //there is no need to rebuild the tree - we proceed to the bottom
-      if(((**node).left_node) != NULL) build_tree(&((**node).left_node), node, start, (**node).cpt, th, contrasts, eval_contrast_fun);
-      if(((**node).right_node) != NULL) build_tree(&((**node).right_node), node, (**node).cpt+1, end, th, contrasts, eval_contrast_fun);
-      
-    }
+          (*node) = Calloc(1, cpt_tree_node_t);
+          (**node).index = NULL;
+          (**node).n_intervals = 0;
+          (**node).left_node = NULL;
+          (**node).right_node = NULL;
+        
+          (**node).cpt = contrast.arg_max+start;
+          (**node).max = contrast.max;
+        
+          build_tree(&((**node).left_node), node, start, (**node).cpt, th, contrasts, eval_contrast_fun);
+          build_tree(&((**node).right_node), node, (**node).cpt+1, end, th, contrasts, eval_contrast_fun);
+
+        
+        } else if(new_n_intervals > 0){
+        
+        
+          new_index = Realloc(new_index, new_n_intervals, int);
+        
+          (*node) = Calloc(1, cpt_tree_node_t);
+          (**node).index = new_index;
+          (**node).n_intervals = new_n_intervals;
+          (**node).left_node = NULL;
+          (**node).right_node = NULL;
+        
+          j = new_index[0];
+
+          if((*contrasts).max[j] > contrast.max) {
+            (**node).cpt = (*contrasts).arg_max[j];  
+            (**node).max = (*contrasts).max[j];
+          }else{
+            (**node).cpt = contrast.arg_max+start;;
+            (**node).max = contrast.max;
+          }
+        
+          build_tree(&((**node).left_node), node, start, (**node).cpt, th, contrasts, eval_contrast_fun);
+          build_tree(&((**node).right_node), node, (**node).cpt+1, end, th, contrasts, eval_contrast_fun);
+        
+        }
+      } 
     
+    } else{
+      //this when we just modify the tree applying a new threshold 
+    
+      //we check if we need to modify the tree
+      if((**node).max <= th) {
+      
+        //the entire branch of the tree needs to be reconstructed, hence we destroy it
+        destroy_tree(node);
+
+        //we build this branch from scratch
+        build_tree(node, parent_node, start, end, th, contrasts, eval_contrast_fun);
+      
+      } else{
+      
+        //there is no need to rebuild the tree - we proceed to the bottom
+        if(((**node).left_node) != NULL) build_tree(&((**node).left_node), node, start, (**node).cpt, th, contrasts, eval_contrast_fun);
+        if(((**node).right_node) != NULL) build_tree(&((**node).right_node), node, (**node).cpt+1, end, th, contrasts, eval_contrast_fun);
+      
+      }
+    }
   }
-  
 }
 
 void get_changepoints(cpt_tree_node_t **node, cpts_t *cpts, int start, int end, int min_dist){

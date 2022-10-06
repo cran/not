@@ -33,13 +33,13 @@ SEXP contrasts_t_to_dataframe(contrasts_t *contrasts){
   memcpy(INTEGER(arg_max), (*contrasts).arg_max, (*contrasts).n_intervals * sizeof(int));
   memcpy(REAL(max), (*contrasts).max, (*contrasts).n_intervals * sizeof(double));
   
-  UNPROTECT(7);
+  UNPROTECT(6);
   
   SEXP df;
   df = PROTECT(lang2(install("data.frame"), lst)); 
   SEXP res = PROTECT(eval(df, R_GlobalEnv)); 
   
-  UNPROTECT(2);
+  UNPROTECT(3);
   
   return res;
 }
