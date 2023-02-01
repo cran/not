@@ -208,7 +208,7 @@ max_contrast_t slope_contrast(double *x, int n_obs){
       tmp1 = (n_min_c+1) * n_min_c;
       tmp2 = c * (c-1);
       
-      lin_coef = tmp1 * (lin_sum_left[i]  * (n_dbl + 2*c - 1) - sum_left[i] * (c*n_dbl + c + 1));
+      lin_coef = tmp1 * (lin_sum_left[i]  * (n_dbl + 2*c - 1) - sum_left[i] * (c*n_dbl + c));
       lin_coef -= tmp2 * (lin_sum_right[i+1] *(3*n_dbl - 2*c + 1)- sum_right[i+1]*(2*n_dbl - c*n_dbl + 2*n_dbl*n_dbl - c));
       lin_coef *= lin_coef;
       lin_coef *= constant_factor * (1.0 / (tmp1 * tmp2)) * (1.0 / ((1-2*c*c+2*c*n_dbl+2*c-n_dbl)));

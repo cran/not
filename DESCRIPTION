@@ -1,8 +1,8 @@
 Package: not
 Type: Package
 Title: Narrowest-Over-Threshold Change-Point Detection
-Version: 1.4
-Date: 2022-10-01
+Version: 1.5
+Date: 2023-01-31
 Author: Rafal Baranowski, Yining Chen, Piotr Fryzlewicz
 Maintainer: Yining Chen <Y.Chen101@lse.ac.uk>
 Depends: graphics, stats, splines
@@ -10,5 +10,5 @@ Description: Provides efficient implementation of the Narrowest-Over-Threshold m
 License: GPL-2
 NeedsCompilation: yes
 Repository: CRAN
-Packaged: 2022-10-05 23:10:02 UTC; chen
-Date/Publication: 2022-10-06 08:10:02 UTC
+Packaged: 2023-02-01 23:23:32 UTC; chen
+Date/Publication: 2023-02-01 23:40:02 UTC

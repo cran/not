@@ -1,4 +1,4 @@
-307485800c2406543c1c6cbd9139275d *DESCRIPTION
+4a7d4acfe7b73bcf55552fc30836ba13 *DESCRIPTION
 ee2f6d39bc7bdbaa271758aa266e7b3e *NAMESPACE
 bc3976495a30dea81a1cce97c33e4cfb *R/features.R
 feba45eaf4ecb31833d4448a57377ae6 *R/logLik.R
@@ -21,7 +21,7 @@ ee96dcd3d8c064a0061904a3b3f70124 *man/residuals.not.Rd
 95e3011e37d9dde0d75f3a3819b2acd3 *src/Makevars
 25f93cffc60ede0ec8c851ba44a761dd *src/changepoints_tree.c
 c51378198013659cadb4c68c710772e2 *src/changepoints_tree.h
-818b84d9e61e547e39272c398abaa2dc *src/contrasts.c
+33aa9eab8a61ced60f1196a88330a924 *src/contrasts.c
 3bcdf1159bd33855153be4e9e7a78e4e *src/contrasts.h
 2f4d1c68b685e370c5375c8eb04a823a *src/not.c
 7270eb3f8e42f445d46ee85b864cbc8f *src/not.h
