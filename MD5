@@ -1,8 +1,8 @@
-4a7d4acfe7b73bcf55552fc30836ba13 *DESCRIPTION
+614078ecdcaf61c9a87091735bab7411 *DESCRIPTION
 ee2f6d39bc7bdbaa271758aa266e7b3e *NAMESPACE
 bc3976495a30dea81a1cce97c33e4cfb *R/features.R
 feba45eaf4ecb31833d4448a57377ae6 *R/logLik.R
-4db9f681ae70fd33fd7132f67fc4f967 *R/not.R
+9a7162c09c0bcdffa39df11096bf184c *R/not.R
 87d2fa9388f71e3441766455f017732c *R/penalties.R
 47532fc30fb0cd894f1a71a79d30a33e *R/plot.R
 faafd15e3dd96d1279adfd46a827752a *R/predict.R
@@ -19,10 +19,10 @@ e59e08dccdd130dcf04b7c99ef6cae75 *man/random.intervals.Rd
 ee96dcd3d8c064a0061904a3b3f70124 *man/residuals.not.Rd
 8472d75c1b982898a352b0c57db95350 *man/sic.penalty.Rd
 95e3011e37d9dde0d75f3a3819b2acd3 *src/Makevars
-25f93cffc60ede0ec8c851ba44a761dd *src/changepoints_tree.c
+a3f930fed0f88322aa2b848273049737 *src/changepoints_tree.c
 c51378198013659cadb4c68c710772e2 *src/changepoints_tree.h
-33aa9eab8a61ced60f1196a88330a924 *src/contrasts.c
+fce814e414fe68edb91349f2f0488cb7 *src/contrasts.c
 3bcdf1159bd33855153be4e9e7a78e4e *src/contrasts.h
-2f4d1c68b685e370c5375c8eb04a823a *src/not.c
+ed6983b03f15809f3b68cb6b9cd10c83 *src/not.c
 7270eb3f8e42f445d46ee85b864cbc8f *src/not.h
 23f15d4eba168c63aca7161e57e08e78 *src/not_init.c
